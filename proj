@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# When called from inside a project folder,
+# runs the corresponding virtualenv's pip command
+# Otherwise, runs pip in /usr/bin
+
+source $VENV/.scripts/common
+
+case "$1" in
+
+# Special case for init since the virtualenv folder won't exist yet
+init) init_project $2;;
+
+# Special case for pip, the only script that must be run from the project folder
+pip)  exec_from_proj "$@";;
+
+# Every other script (python, nosetests) can choose to run based on
+# either $PWD or args (one of the args should point to a file in a project)
+*) exec_project_bin "$@";;
+
+esac
