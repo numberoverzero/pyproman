@@ -11,8 +11,8 @@ PyProMan (that's **Py**thon **Pro**ject **Man**ager) is a small package that aim
 # Setup
 1. Setup the following environment variables:
 
-        ```$PROJ``` - the folder that projects are in
-        ```$VENV``` - the folder that virtualenvs should be saved in
+        $PROJ - the folder that projects are in
+        $VENV - the folder that virtualenvs should be saved in
 2. Copy this repository to `$VENV/.scripts` (currently just the files common and proj)
 
 # Example
