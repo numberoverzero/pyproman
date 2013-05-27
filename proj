@@ -9,7 +9,7 @@ source $VENV/.scripts/common
 case "$1" in
 
 # Special case for init since the virtualenv folder won't exist yet
-init) init_project $2;;
+init) init_project $2 $3;;
 
 # Special case for pip, the only script that must be run from the project folder
 pip)  exec_from_proj "$@";;

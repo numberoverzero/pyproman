@@ -57,9 +57,23 @@ function init_project() {
 	project_from_pwd
 	if [ "$project" ]
 	then
-		virtualenv -p $1 --no-site-packages $VENV/$project
+		# If running init from a project directory, first arg is python version
+		# Don't create the virtualenv if there's already one there
+		[ -d $VENV/$project ] || virtualenv -p $1 --no-site-packages $VENV/$project
 	else
-		echo Could not determine what project to create virtualenv for.
+		# If running init from outside a project directory,
+		# first arg is project name, second is python version.
+		#
+		# This allows us to use "proj init" much like git clone:
+		# ~/projects $ git clone git@github.com....fooproject.git
+		# Cloning repository into fooproject...
+		# ~/projects $ proj init fooproject python2.7
+		# ... Virtualenv output
+		local project="$1"
+		local py="$2"
+		# Don't create the virtualenv if there's already one there
+		[ -d $VENV/$project ] || virtualenv -p $py --no-site-packages $VENV/$project
+		mkdir -p $PROJ/$project
 	fi
 }
 
