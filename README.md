@@ -1,6 +1,6 @@
 #PyProMan
 
-PyProMan (that's **Py**thon **Pro**ject **Man**ager) is a small package that aims to make switching between python projects and their respective virtualenvs easier.  Usually it's enough to run the activate script in each project's virtualenv, but I'm (particularly) lazy.  Also, this doesn't agree with SublimeText.  *(see* Motivation *at bottom)*
+PyProMan (that's **Py**thon **Pro**ject **Man**ager) is a small package that aims to make switching between python projects and their respective virtualenvs easier.  Usually it's enough to run the activate script in each project's virtualenv, but I'm (particularly) lazy.  Also, this doesn't agree with SublimeText.  *(see ``Motivation``_)*
 
 # Usage
 
@@ -13,7 +13,7 @@ PyProMan (that's **Py**thon **Pro**ject **Man**ager) is a small package that aim
 
         $PROJ - the folder that projects are in
         $VENV - the folder that virtualenvs should be saved in
-2. Copy this repository to `$VENV/.scripts` (currently just the files common and proj)
+2. Put ``proj`` somewhere on your path.
 
 # Example
 Let's create a sample project, `foo` with a basic script.

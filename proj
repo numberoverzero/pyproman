@@ -1,10 +1,121 @@
 #!/bin/bash
 
-# When called from inside a project folder,
-# runs the corresponding virtualenv's pip command
-# Otherwise, runs pip in /usr/bin
+# Run commands in appropriate virtualenv folder, falling back to system value
+# Necesssary environment variables:
+#  VENV: folder containing virtual environment folders
+#  PROJ: folder containing project folders
 
-source $VENV/.scripts/common
+function parse_first_arg() {
+    local var
+    for var in "$@"
+    do
+        if [[ ! "$var" =~ ^- ]]
+        then
+            nonflag_arg="$var"
+            break
+        fi
+    done
+}
+
+function project_from_args() {
+    # Find the script file we'll be executing
+    # (it's the first arg that doesn't start with a dash)
+    parse_first_arg "$@"
+    local script=$nonflag_arg
+
+    # If the script file doesn't start with a / then it's relative,
+    # so we prepend $PWD to get abs path
+    if [[ ! "$script" =~ ^/ ]]
+    then
+        local script=$PWD/$script
+    fi
+
+    # Only do stuff if the script path starts with project root
+    if [[ "$script" == $PROJ* ]]
+    then
+        #Strip project root off
+        local pr_len=${#PROJ}
+        project=${script:pr_len+1}
+
+        #Strip everything after project folder
+        project=${project%%/*}
+    fi
+}
+
+function project_from_pwd() {
+    # Only do stuff if the pwd starts with project root
+    if [[ "$PWD" == $PROJ* ]]
+    then
+        #Strip project root off
+        local pr_len=${#PROJ}
+        project=${PWD:pr_len+1}
+
+        #Strip everything after project folder
+        project=${project%%/*}
+    fi
+}
+
+function init_project() {
+    project_from_pwd
+    if [ "$project" ]
+    then
+        # If running init from a project directory, first arg is python version
+        # Don't create the virtualenv if there's already one there
+        [ -d $VENV/$project ] || virtualenv -p $1 --no-site-packages $VENV/$project
+    else
+        # If running init from outside a project directory,
+        # first arg is project name, second is python version.
+        #
+        # This allows us to use "proj init" much like git clone:
+        # ~/projects $ git clone git@github.com....fooproject.git
+        # Cloning repository into fooproject...
+        # ~/projects $ proj init fooproject python2.7
+        # ... Virtualenv output
+        local project="$1"
+        local py="$2"
+        # Don't create the virtualenv if there's already one there
+        [ -d $VENV/$project ] || virtualenv -p $py --no-site-packages $VENV/$project
+        mkdir -p $PROJ/$project
+    fi
+}
+
+function exec_project_bin() {
+
+    local cmd="$1"
+    local args="${@:2}"
+
+    # Try to figure out what project we're in
+
+    # Use $PWD first since some commands may not take args
+    project_from_pwd
+    if [ ! "$project" ]
+    then
+        project_from_args $args
+        if [ ! "$project" ]
+        then
+            # Couldn't figure out project from $PWD or first arg
+            echo Could not locate virtualenv interpreter for given project.
+            echo Not running $cmd.
+            exit
+        fi
+    fi
+
+    # Found project somehow
+    $VENV/$project/bin/$cmd $args
+}
+
+function exec_from_proj() {
+    local cmd="$1"
+    local args="${@:2}"
+    project_from_pwd
+    if [ "$project" ]
+    then
+        $VENV/$project/bin/$cmd $args
+    else
+        echo Could not locate virtualenv for given project.
+        echo Not running $cmd.
+    fi
+}
 
 case "$1" in
 
