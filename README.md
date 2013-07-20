@@ -24,6 +24,10 @@ Let's create a sample project, `foo` with a basic script.
     ~/projects/foo $ proj init python3.3
     ... A bunch of output as we set up a virtualenv with python3.3, using --no-site-packages
 
+Or pass a folder name, much as you would with git clone:
+
+    ~ $ proj init foo python3.3
+
 A quick script:
 
     ~/projects/foo $ echo "print('Hello, World.')" > script.py
